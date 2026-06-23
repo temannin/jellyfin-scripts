@@ -11,6 +11,8 @@ Usage:
   python jellyfin_policy.py --disable-remux
   python jellyfin_policy.py --enable-transcoding
   python jellyfin_policy.py --disable-transcoding
+  python jellyfin_policy.py --enable-downloads
+  python jellyfin_policy.py --disable-downloads
   python jellyfin_policy.py --enable-all
   python jellyfin_policy.py --disable-all
   python jellyfin_policy.py --status
@@ -28,6 +30,7 @@ POLICY_FLAGS = {
     "remux":               "EnablePlaybackRemuxing",
     "video-transcoding":   "EnableVideoPlaybackTranscoding",
     "audio-transcoding":   "EnableAudioPlaybackTranscoding",
+    "downloads":           "EnableContentDownloading",
 }
 
 
@@ -85,7 +88,7 @@ def print_status(server: str, api_key: str, username: str = None) -> None:
     users = get_users(server, api_key, username)
 
     col = 20
-    header = f"{'User':<{col}} {'Remux':<8} {'Video TX':<10} {'Audio TX':<10}"
+    header = f"{'User':<{col}} {'Remux':<8} {'Video TX':<10} {'Audio TX':<10} {'Downloads':<11}"
     print(f"\n{header}")
     print("─" * len(header))
 
@@ -95,7 +98,8 @@ def print_status(server: str, api_key: str, username: str = None) -> None:
         remux  = "✅" if policy.get("EnablePlaybackRemuxing") else "❌"
         vtx    = "✅" if policy.get("EnableVideoPlaybackTranscoding") else "❌"
         atx    = "✅" if policy.get("EnableAudioPlaybackTranscoding") else "❌"
-        print(f"{name:<{col}} {remux:<8} {vtx:<10} {atx:<10}")
+        dl     = "✅" if policy.get("EnableContentDownloading") else "❌"
+        print(f"{name:<{col}} {remux:<8} {vtx:<10} {atx:<10} {dl:<11}")
 
     print()
 
@@ -138,6 +142,8 @@ if __name__ == "__main__":
         "--disable-remux":         {POLICY_FLAGS["remux"]: False},
         "--enable-transcoding":    {POLICY_FLAGS["video-transcoding"]: True,  POLICY_FLAGS["audio-transcoding"]: True},
         "--disable-transcoding":   {POLICY_FLAGS["video-transcoding"]: False, POLICY_FLAGS["audio-transcoding"]: False},
+        "--enable-downloads":      {POLICY_FLAGS["downloads"]: True},
+        "--disable-downloads":     {POLICY_FLAGS["downloads"]: False},
         "--enable-all":            {v: True  for v in POLICY_FLAGS.values()},
         "--disable-all":           {v: False for v in POLICY_FLAGS.values()},
     }
